@@ -80,6 +80,7 @@ void setup(void)
   servox2.attach(9);
   servoy1.attach(10);
   servoy2.attach(11);
+  
   /* Initialise the sensors */
   initSensors();
   calibrate();
@@ -144,10 +145,25 @@ void loop(void)
     int angleX = orientation.roll - originRoll;
     int angleY = orientation.pitch - originPitch;
 
-    int valx2 = (int) angleX + 90;
-    int valx1 = (int) (-1*angleX) + 90;
-    int valy2 = (int) angleY + 90;
-    int valy1 = (int) (-1*angleY) + 90;
+    
+    int offsetX = analogRead(A0); // A0
+    int offsetY = analogRead(A1);
+
+
+    offsetX = map(offsetX, 0, 1023, -45, 45);
+    offsetY = map(offsetY, 0, 1023, -45, 45);
+
+
+    Serial.print("Offset X: ");
+    Serial.println(offsetX);
+    Serial.print("Offset Y: ");
+    Serial.println(offsetY);
+    
+
+    int valx2 = (int) angleX + 90 + offsetX;
+    int valx1 = (int) -1 * (angleX + offsetX) + 90 ;
+    int valy2 = (int) angleY + 90 + offsetY;
+    int valy1 = (int) -1 * (angleY + offsetY) + 90;
 
     servox1.write(valx1);
     servox2.write(valx2);
